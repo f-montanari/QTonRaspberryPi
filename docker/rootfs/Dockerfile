@@ -1,20 +1,14 @@
 # arm64 Trixie base 2025-10-01-raspios-trixie-arm64
 # 32 bit os will fail for this case
-FROM arm64v8/debian:trixie
+FROM balenalib/rpi-raspbian:bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Optional: keep a build log
 RUN touch /build.log
 
-# Use Trixie repositories
 RUN { \
   set -e; \
-  printf '%s\n' \
-    'deb http://deb.debian.org/debian trixie main contrib non-free-firmware' \
-    'deb http://deb.debian.org/debian trixie-updates main contrib non-free-firmware' \
-    'deb http://security.debian.org/debian-security trixie-security main contrib non-free-firmware' \
-    > /etc/apt/sources.list; \
   apt-get update; \
   apt-get -y full-upgrade; \
   apt-get install -y --no-install-recommends \
