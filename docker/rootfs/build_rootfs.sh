@@ -1,3 +1,4 @@
-docker buildx build --platform linux/arm64 --load -f docker/rootfs/Dockerfile -t crossbuild-rootfs .
-docker create -v ./docker/rootfs/build:/build --name cross-rootfs crossbuild-rootfs
-cp docker/rootfs/build/rasp.tar.gz ./rasp.tar.gz
+docker buildx build --platform linux/arm64 --load -t crossbuild-rootfs .
+docker create --name cross-rootfs crossbuild-rootfs
+docker cp cross-rootfs:/build.log ./build/build.log
+docker cp cross-rootfs:/build/rasp.tar.gz ./build/rasp.tar.gz
