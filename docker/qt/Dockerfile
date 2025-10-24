@@ -40,12 +40,13 @@ fi
 # Build Qt 6.8.1 (host + Pi)
 # -----------------------------------------------------
 RUN set -eux; \
-    mkdir -p qt6 qt6/host qt6/pi qt6/src qt6/host-build qt6/pi-build; \
-    cd qt6/src; \
+    mkdir -p /build/qt6/src; cd /build/qt6/src; \
     wget -q https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtbase-everywhere-src-6.8.1.tar.xz; \
     wget -q https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtshadertools-everywhere-src-6.8.1.tar.xz; \
-    wget -q https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtdeclarative-everywhere-src-6.8.1.tar.xz; \
-    cd ../host-build; \
+    wget -q https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtdeclarative-everywhere-src-6.8.1.tar.xz
+
+    RUN set -eux; \
+    cd /build/qt6; mkdir -p host host-build; cd host-build; \
     tar xf ../src/qtbase-everywhere-src-6.8.1.tar.xz; \
     tar xf ../src/qtshadertools-everywhere-src-6.8.1.tar.xz; \
     tar xf ../src/qtdeclarative-everywhere-src-6.8.1.tar.xz; \
@@ -57,20 +58,24 @@ RUN set -eux; \
     cd ../qtshadertools-everywhere-src-6.8.1; \
     /build/qt6/host/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .; \
     cd ../qtdeclarative-everywhere-src-6.8.1; \
-    /build/qt6/host/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .; \
-    cd ../../pi-build; \
+    /build/qt6/host/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .;
+
+RUN set -eux; \
+    cd /build/qt6; mkdir -p pi pi-build; cd pi-build; \
     tar xf ../src/qtbase-everywhere-src-6.8.1.tar.xz; \
     tar xf ../src/qtshadertools-everywhere-src-6.8.1.tar.xz; \
     tar xf ../src/qtdeclarative-everywhere-src-6.8.1.tar.xz; \
     echo "Building Qt for Raspberry Pi..."; \
     cd qtbase-everywhere-src-6.8.1; \
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DINPUT_opengl=es2 \
+    cmake -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
         -DQT_BUILD_EXAMPLES=OFF -DQT_BUILD_TESTS=OFF \
         -DQT_HOST_PATH=/build/qt6/host \
         -DCMAKE_STAGING_PREFIX=/build/qt6/pi \
         -DCMAKE_INSTALL_PREFIX=/usr/local/qt6 \
         -DCMAKE_TOOLCHAIN_FILE=/build/toolchain.cmake \
-        -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DFEATURE_sql_psql=ON -DQT_FEATURE_xlib=ON; \
+        -DINPUT_opengl=es2 \
+        -DQT_FEATURE_xcb=ON -DQT_FEATURE_xlib=ON -DQT_FEATURE_sql_psql=ON; \
     cmake --build . --parallel $(nproc); cmake --install .; \
     cd ../qtshadertools-everywhere-src-6.8.1; \
     /build/qt6/pi/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .; \
