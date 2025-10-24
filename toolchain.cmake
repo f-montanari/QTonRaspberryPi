@@ -7,7 +7,7 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 
 # Set the target sysroot and architecture
 set(TARGET_SYSROOT /build/sysroot)
-set(TARGET_ARCHITECTURE aarch64-linux-gnu)
+set(TARGET_ARCHITECTURE arm-linux-gnueabihf)
 set(CMAKE_SYSROOT ${TARGET_SYSROOT})
 
 # Configure the pkg-config environment variables
@@ -24,7 +24,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isystem=/usr/include -isystem=/usr/local/in
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
 # Set Qt-specific compiler and linker flags
-set(QT_COMPILER_FLAGS "-march=armv8-a -mtune=generic -ftree-vectorize")
+set(QT_COMPILER_FLAGS "-march=armv6 -mfpu=vfp -mfloat-abi=hard -mtune=generic -ftree-vectorize")
 set(QT_COMPILER_FLAGS_RELEASE "-O2 -pipe")
 set(QT_LINKER_FLAGS "-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-rpath-link=${TARGET_SYSROOT}/usr/lib/${TARGET_ARCHITECTURE} -Wl,-rpath-link=$HOME/qt6/pi/lib")
 
@@ -39,8 +39,8 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 set(CMAKE_BUILD_RPATH ${TARGET_SYSROOT})
 
 # Initialize CMake configuration variables with the specified flags.
-set(CMAKE_C_FLAGS_INIT "${QT_COMPILER_FLAGS} -march=armv8-a")
-set(CMAKE_CXX_FLAGS_INIT "${QT_COMPILER_FLAGS} -march=armv8-a")
+set(CMAKE_C_FLAGS_INIT "${QT_COMPILER_FLAGS} -march=armv6 -mfpu=vfp -mfloat-abi=hard")
+set(CMAKE_CXX_FLAGS_INIT "${QT_COMPILER_FLAGS} -march=armv6 -mfpu=vfp -mfloat-abi=hard")
 set(CMAKE_EXE_LINKER_FLAGS_INIT "${QT_LINKER_FLAGS} -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed")
 set(CMAKE_SHARED_LINKER_FLAGS_INIT "${QT_LINKER_FLAGS} -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed")
 set(CMAKE_MODULE_LINKER_FLAGS_INIT "${QT_LINKER_FLAGS} -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed")

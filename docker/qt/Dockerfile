@@ -39,13 +39,17 @@ fi
 # -----------------------------------------------------
 # Build Qt 6.4.2 (host + Pi)
 # -----------------------------------------------------
+# Setup directories and download Qt sources
 RUN set -eux; \
     mkdir -p qt6 qt6/host qt6/pi qt6/src qt6/host-build qt6/pi-build; \
     cd qt6/src; \
     wget -q https://download.qt.io/archive/qt/6.4/6.4.2/submodules/qtbase-everywhere-src-6.4.2.tar.xz; \
     wget -q https://download.qt.io/archive/qt/6.4/6.4.2/submodules/qtshadertools-everywhere-src-6.4.2.tar.xz; \
-    wget -q https://download.qt.io/archive/qt/6.4/6.4.2/submodules/qtdeclarative-everywhere-src-6.4.2.tar.xz; \
-    cd ../host-build; \
+    wget -q https://download.qt.io/archive/qt/6.4/6.4.2/submodules/qtdeclarative-everywhere-src-6.4.2.tar.xz
+
+# Build Qt for Host
+RUN set -eux; \
+    cd /build/qt6/host-build; \
     tar xf ../src/qtbase-everywhere-src-6.4.2.tar.xz; \
     tar xf ../src/qtshadertools-everywhere-src-6.4.2.tar.xz; \
     tar xf ../src/qtdeclarative-everywhere-src-6.4.2.tar.xz; \
@@ -57,8 +61,13 @@ RUN set -eux; \
     cd ../qtshadertools-everywhere-src-6.4.2; \
     /build/qt6/host/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .; \
     cd ../qtdeclarative-everywhere-src-6.4.2; \
-    /build/qt6/host/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .; \
-    cd ../../pi-build; \
+    /build/qt6/host/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .
+
+RUN apt-get install -y g++-arm-linux-gnueabihf
+
+# Build Qt for Raspberry Pi
+RUN set -eux; \
+    cd /build/qt6/pi-build; \
     tar xf ../src/qtbase-everywhere-src-6.4.2.tar.xz; \
     tar xf ../src/qtshadertools-everywhere-src-6.4.2.tar.xz; \
     tar xf ../src/qtdeclarative-everywhere-src-6.4.2.tar.xz; \
