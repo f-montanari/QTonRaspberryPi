@@ -43,9 +43,10 @@ RUN set -eux; \
     mkdir -p /build/qt6/src; cd /build/qt6/src; \
     wget -q https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtbase-everywhere-src-6.8.1.tar.xz; \
     wget -q https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtshadertools-everywhere-src-6.8.1.tar.xz; \
-    wget -q https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtdeclarative-everywhere-src-6.8.1.tar.xz
+    wget -q https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtdeclarative-everywhere-src-6.8.1.tar.xz; \
+    wget -q https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtwayland-everywhere-src-6.8.1.tar.xz;
 
-    RUN set -eux; \
+RUN set -eux; \
     cd /build/qt6; mkdir -p host host-build; cd host-build; \
     tar xf ../src/qtbase-everywhere-src-6.8.1.tar.xz; \
     tar xf ../src/qtshadertools-everywhere-src-6.8.1.tar.xz; \
@@ -65,6 +66,7 @@ RUN set -eux; \
     tar xf ../src/qtbase-everywhere-src-6.8.1.tar.xz; \
     tar xf ../src/qtshadertools-everywhere-src-6.8.1.tar.xz; \
     tar xf ../src/qtdeclarative-everywhere-src-6.8.1.tar.xz; \
+    tar xf ../src/qtwayland-everywhere-src-6.8.1.tar.xz; \
     echo "Building Qt for Raspberry Pi..."; \
     cd qtbase-everywhere-src-6.8.1; \
     cmake -GNinja \
@@ -75,11 +77,15 @@ RUN set -eux; \
         -DCMAKE_INSTALL_PREFIX=/usr/local/qt6 \
         -DCMAKE_TOOLCHAIN_FILE=/build/toolchain.cmake \
         -DINPUT_opengl=es2 \
-        -DQT_FEATURE_xcb=ON -DQT_FEATURE_xlib=ON -DQT_FEATURE_sql_psql=ON; \
+        -DQT_FEATURE_xcb=ON -DQT_FEATURE_xlib=ON \
+        -DQT_FEATURE_wayland=ON \
+        -DQT_FEATURE_sql_psql=ON; \
     cmake --build . --parallel $(nproc); cmake --install .; \
     cd ../qtshadertools-everywhere-src-6.8.1; \
     /build/qt6/pi/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .; \
     cd ../qtdeclarative-everywhere-src-6.8.1; \
+    /build/qt6/pi/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .; \
+    cd ../qtwayland-everywhere-src-6.8.1; \
     /build/qt6/pi/bin/qt-configure-module .; cmake --build . --parallel $(nproc); cmake --install .; \
     echo "Qt cross-build complete."
 
