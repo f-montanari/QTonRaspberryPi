@@ -44,13 +44,12 @@ RUN set -eux; \
 # Copy Raspberry Pi sysroot
 # -----------------------------------------------------
 COPY rasp.tar.gz /build/
-RUN mkdir -p /build/sysroot && tar xfz /build/rasp.tar.gz -C /build/sysroot
+RUN mkdir -p /build/sysroot && tar -xzf /build/rasp.tar.gz -C /build/sysroot
+COPY docker/base/sysroot-relativelinks.py /tmp/sysroot-relativelinks.py
 
 # Fix relative links in sysroot
-RUN wget https://raw.githubusercontent.com/riscv/riscv-poky/master/scripts/sysroot-relativelinks.py \
-    && chmod +x sysroot-relativelinks.py \
-    && python3 sysroot-relativelinks.py /build/sysroot \
-    && rm sysroot-relativelinks.py
-
+RUN chmod +x /tmp/sysroot-relativelinks.py \
+    && python3 /tmp/sysroot-relativelinks.py /build/sysroot \
+    && rm /tmp/sysroot-relativelinks.py
 # Default workdir for derived images
 WORKDIR /build
